@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const UserSchema = new mongoose.Schema({
     name: String,
     email: String,
-    club: { type: mongoose.Schema.Types.ObjectId, ref: 'clubs' }, // Foreign key reference to Club model
+    age: Number,
+    club: { type: mongoose.Schema.Types.ObjectId, ref: 'clubs' }, // Ensure 'clubs' matches the Club collection name
     position: String,
 });
 

@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const UserModel = require("./User");
-const ClubModel = require("./Club"); // Correct path to clubModel.js
+const ClubModel = require("./Club"); 
 var cors = require('cors')
 const app = express();
 const port = 3001;
