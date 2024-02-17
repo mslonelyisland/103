@@ -1,8 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from './Navbar'; // Import the navbar component
-
+import Navbar from './Navbar'; 
 function CreateUser() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -34,7 +33,7 @@ function CreateUser() {
 
     return (
         <div>
-            <Navbar /> {/* Include the navbar component */}
+            <Navbar /> 
             <div className="container-fluid d-flex justify-content-center align-items-center vh-110">
                 <div className="w-50 bg-white rounded p-3">
                     <form onSubmit={handleSubmit}>
@@ -91,7 +90,7 @@ function CreateUser() {
                                 onChange={(e) => setPosition(e.target.value)}
                             />
                         </div>
-                        <button className="btn btn-outline-primary">Create User</button>
+                        <button className="btn btn-outline-dark">Create User</button>
                     </form>
                 </div>
             </div>

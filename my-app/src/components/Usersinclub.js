@@ -26,16 +26,7 @@ const UsersInClub = () => {
             <div className="container mt-3">
             <h5>Club Members: </h5>
             <div className='row'>
-            <div className="col"> {/* Added col div */}
-                {/* Search input by name only */}
-                <input
-                type="text"
-                placeholder="Search by name"
-                className="form-control mb-2"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                />
-            </div>
+            
             </div>
                 
             <table className="table table-striped">

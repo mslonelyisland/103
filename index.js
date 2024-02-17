@@ -21,15 +21,14 @@ mongoose
 // retrieve all users, working
 app.get("/", (req, res) => {
   UserModel.find()
-    .populate('club') // Populate the 'club' field with actual club details
+    .populate('club') // Populate the 'club' field with da club details
     .then((users) => {
-      // Convert age to string and construct the desired output format
       const formattedUsers = users.map(user => ({
         _id: user._id,
         name: user.name,
         email: user.email,
-        age: user.age.toString(), // Convert age to string
-        club: user.club ? user.club.clubName : '', // Display club name if available
+        age: user.age.toString(), 
+        club: user.club ? user.club.clubName : '', 
         position: user.position
       }));
       res.json(formattedUsers);
@@ -75,7 +74,6 @@ app.post("/createuser", async (req, res) => {
     // Create the user
     const newUser = await UserModel.create({ name, email, age, position, club });
 
-    // If club ID is provided, update the corresponding club's users list
     if (club) {
       const updatedClub = await ClubModel.findByIdAndUpdate(
         club,
@@ -84,12 +82,12 @@ app.post("/createuser", async (req, res) => {
       );
 
       if (!updatedClub) {
-        // If the club with the provided ID doesn't exist, handle the error
+        // if no club
         return res.status(404).json({ error: "Club not found" });
       }
     }
 
-    res.json(newUser); // Respond with the newly created user
+    res.json(newUser); 
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal server error" });
@@ -99,7 +97,7 @@ app.post("/createuser", async (req, res) => {
 //update the info
 app.put("/updateuser/:id", async (req, res) => {
   const id = req.params.id;
-  const { name, email, age, position, clubName } = req.body; // Assuming clubName is the field containing the club's name
+  const { name, email, age, position, clubName } = req.body; 
 
   try {
     // Update user information including club name
@@ -110,7 +108,7 @@ app.put("/updateuser/:id", async (req, res) => {
         email,
         age,
         position,
-        // Do not set clubName here as it's not a direct field of User
+        
       },
       { new: true } // Return the updated document
     );
@@ -119,7 +117,7 @@ app.put("/updateuser/:id", async (req, res) => {
       if (clubName) {
         const club = await ClubModel.findOneAndUpdate(
           { clubName: clubName },
-          { $addToSet: { users: user._id } }, // Use $addToSet to avoid duplicate references
+          { $addToSet: { users: user._id } }, 
           { new: true }
         );
         user.club = club._id;
@@ -142,7 +140,7 @@ app.delete("/deleteuser/:id", async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Remove the user from the corresponding club's users array
+    // Remove the user to the club
     if (deletedUser.club) {
       const updatedClub = await ClubModel.findByIdAndUpdate(
         deletedUser.club,
@@ -150,7 +148,7 @@ app.delete("/deleteuser/:id", async (req, res) => {
         { new: true }
       );
       if (!updatedClub) {
-        // Handle the case where the club with the provided ID doesn't exist
+  
         return res.status(404).json({ error: "Club not found" });
       }
     }
@@ -162,9 +160,6 @@ app.delete("/deleteuser/:id", async (req, res) => {
   }
 });
 
-
-
-
 // For clubs
 // Retrieve all clubs
 app.get("/clubs", (req, res) => {
@@ -173,7 +168,7 @@ app.get("/clubs", (req, res) => {
     .catch((err) => res.status(500).json({ error: "Internal server error" }));
 });
 
-// Retrieve users in a specific club
+// Retrieve users in a specific club, working
 app.get("/clubs/:id/users", (req, res) => {
   const clubId = req.params.id;
   UserModel.find({ club: clubId })
@@ -186,7 +181,7 @@ app.get("/clubs/:id/users", (req, res) => {
     });
 });
 
-// Create a club,working
+// Create a club, working
 app.post("/createclub", (req, res) => {
   const { clubName, description, numberOfMembers } = req.body;
   ClubModel.create({ clubName, description, numberOfMembers })

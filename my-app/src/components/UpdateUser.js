@@ -113,7 +113,7 @@ function UpdateUser() {
                                onChange={(e) => setPosition(e.target.value)}
                            />
                        </div>
-                       <button className="btn btn-outline-primary">Update</button>
+                       <button className="btn btn-outline-dark">Update</button>
                    </form>
                </div>
            </div>

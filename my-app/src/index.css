@@ -12,3 +12,13 @@ code {
     monospace;
 }
 
+.navbar .nav-item .nav-link.clubs,
+.navbar .nav-item .nav-link.users {
+  font-weight: normal; /* Set initial font weight */
+  transition: font-weight 0.01s ease; /* Smooth transition */
+}
+
+.navbar .nav-item .nav-link.clubs:hover,
+.navbar .nav-item .nav-link.users:hover {
+  font-weight: bold; /* Set font weight to bold on hover */
+}

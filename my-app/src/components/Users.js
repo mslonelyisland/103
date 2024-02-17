@@ -4,13 +4,16 @@ import axios from "axios";
 import Navbar from "./Navbar"; // Import the navbar component
 
 function Users() {
-  // eslint-disable-next-line no-unused-vars
   const { id: _ } = useParams();
   const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); 
   const navigate = useNavigate();
 
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
     axios
       .get("http://localhost:3001/")
       .then((response) => {
@@ -20,7 +23,7 @@ function Users() {
       .catch((error) => {
         console.error("Axios Error:", error);
       });
-  }, []);
+  };
 
   // to delete
   const handleDelete = (id) => {
@@ -28,7 +31,8 @@ function Users() {
       .delete(`http://localhost:3001/deleteuser/${id}`)
       .then((res) => {
         console.log(res);
-        navigate("/users");
+        fetchData(); // Refresh user data
+        navigate("/users"); // Redirect to users page
       })
       .catch((err) => console.log(err));
   };
@@ -43,7 +47,7 @@ function Users() {
       <div className="container mt-3">
         <div className="row"> {/* Added row div */}
           <div className="col"> {/* Added col div */}
-            <Link to="/createuser" className="btn btn-outline-primary mb-2">
+            <Link to="/createuser" className="btn btn-outline-dark mb-2">
               Add User
             </Link>
           </div>
@@ -82,7 +86,7 @@ function Users() {
                   <td>
                     <Link
                       to={`/edit/${user._id}`}
-                      className="btn btn-outline-primary mx-2"
+                      className="btn btn-outline-dark mx-2"
                     >
                       Update
                     </Link>
