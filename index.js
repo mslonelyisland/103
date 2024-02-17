@@ -131,22 +131,48 @@ app.put("/updateuser/:id", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-  // delete user
-  app.delete("/deleteuser/:id", (req, res) => {
-    const id = req.params.id;
-    UserModel.findByIdAndDelete({ _id: id })
-      .then((response) => res.json(response))
-      .catch((err) => res.json(err));
-  });
+
+// delete user
+app.delete("/deleteuser/:id", async (req, res) => {
+  const userId = req.params.id;
+  try {
+    // Find and delete the user from the database
+    const deletedUser = await UserModel.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Remove the user from the corresponding club's users array
+    if (deletedUser.club) {
+      const updatedClub = await ClubModel.findByIdAndUpdate(
+        deletedUser.club,
+        { $pull: { users: userId } }, // Remove the user's ObjectId from the club's users array
+        { new: true }
+      );
+      if (!updatedClub) {
+        // Handle the case where the club with the provided ID doesn't exist
+        return res.status(404).json({ error: "Club not found" });
+      }
+    }
+
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+
 
 // For clubs
-// Retrieve all clubs with users, workin
+// Retrieve all clubs
 app.get("/clubs", (req, res) => {
   ClubModel.find()
-    .populate('users') // Populate the 'users' field with actual user details
     .then((clubs) => res.json(clubs))
-    .catch((err) => res.json(err));
+    .catch((err) => res.status(500).json({ error: "Internal server error" }));
 });
+
 // Retrieve users in a specific club
 app.get("/clubs/:id/users", (req, res) => {
   const clubId = req.params.id;

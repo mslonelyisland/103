@@ -5,11 +5,12 @@ import Navbar from './Navbar'; // Import the navbar component
 
 
 const UsersInClub = () => {
-    const { id } = useParams(); // Get the club ID from the URL parameters
+    const { id } = useParams(); 
     const [users, setUsers] = useState([]);
+    const [searchQuery, setSearchQuery] = useState(""); 
 
     useEffect(() => {
-        axios.get(`http://localhost:3001/clubs/${id}/users`) // Fetch users for the specific club
+        axios.get(`http://localhost:3001/clubs/${id}/users`) // get users for the specific club they belong to
             .then(response => {
                 console.log(response.data);
                 setUsers(response.data);
@@ -17,14 +18,26 @@ const UsersInClub = () => {
             .catch(error => {
                 console.error('Axios Error:', error);
             });
-    }, [id]); // Include clubId in the dependency array
+    }, [id]); 
 
     return (
         <div>
-            <Navbar /> {/* Include the navbar component */}
+            <Navbar /> {/* for the the navbar component */}
             <div className="container mt-3">
-            
-            <h4>Members: </h4>
+            <h5>Club Members: </h5>
+            <div className='row'>
+            <div className="col"> {/* Added col div */}
+                {/* Search input by name only */}
+                <input
+                type="text"
+                placeholder="Search by name"
+                className="form-control mb-2"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
+            </div>
+                
             <table className="table table-striped">
                 <thead className='thead-dark'>
                     <tr>

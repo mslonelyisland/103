@@ -6,22 +6,23 @@ import Navbar from './Navbar'; // Import the navbar component
 function UpdateUser() {
     const { id } = useParams();
     
-    const [name, setName] = useState();
-    const [email, setEmail] = useState();
-    const [age, setAge] = useState();
-    const [club, setClub] = useState();
-    const [position, setPosition] = useState();
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [age, setAge] = useState('');
+    const [clubs, setClubs] = useState([]);
+    const [selectedClub, setSelectedClub] = useState('');
+    const [position, setPosition] = useState('');
     
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await axios.get("http://localhost:3001/get/" + id);
-                console.log("User Data:", response.data); // Log the entire user data object
+                console.log("User Data:", response.data); 
                 setName(response.data.name);
                 setEmail(response.data.email);
                 setAge(response.data.age);
                 setPosition(response.data.position);
-                setClub(response.data.club);
+                setSelectedClub(response.data.club); 
             } catch (err) {
                 console.log(err);
             }
@@ -29,17 +30,26 @@ function UpdateUser() {
         fetchData();
     }, [id]);
     
+    useEffect(() => {
+        // Fetch clubs
+        axios.get('http://localhost:3001/clubs')
+            .then(response => {
+                setClubs(response.data);
+            })
+            .catch(err => console.log(err));
+    }, []);
+    
     const navigate = useNavigate();
     
     const handleUpdate = (e) => {
-        e.preventDefault()
-        axios.put('http://localhost:3001/updateuser/' + id, {name, email, age, club, position})
-        .then(res => {
-            console.log(res);
-            navigate('/')
-        })
-        .catch(err => console.log(err))
-    }
+        e.preventDefault();
+        axios.put('http://localhost:3001/updateuser/' + id, { name, email, age, club: selectedClub, position }) 
+            .then(res => {
+                console.log(res);
+                navigate('/users');
+            })
+            .catch(err => console.log(err));
+    };
     
     return ( 
         <div>
@@ -81,15 +91,18 @@ function UpdateUser() {
                            />
                        </div>
                        <div className="mb-2">
-                           <label htmlFor="">Club</label>
-                           <input
-                               type="text"
-                               placeholder="Enter Club"
-                               className="form-control"
-                               value={club}
-                               onChange={(e) => setClub(e.target.value)}
-                           />
-                       </div>
+                            <label htmlFor="">Club</label>
+                            <select
+                                className="form-control"
+                                value={selectedClub}
+                                onChange={(e) => setSelectedClub(e.target.value)}
+                            >
+                                <option value="">Select Club</option>
+                                {clubs.map(club => (
+                                    <option key={club._id} value={club.clubName}>{club.clubName}</option>
+                                ))}
+                            </select>
+                        </div>
                        <div className="mb-2">
                            <label htmlFor="">Position</label>
                            <input
@@ -100,7 +113,7 @@ function UpdateUser() {
                                onChange={(e) => setPosition(e.target.value)}
                            />
                        </div>
-                       <button className="btn btn-success">Update</button>
+                       <button className="btn btn-outline-primary">Update</button>
                    </form>
                </div>
            </div>

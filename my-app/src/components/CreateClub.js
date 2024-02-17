@@ -57,7 +57,7 @@ function CreateClub() {
                                 onChange={(e) => setNumberOfMembers(parseInt(e.target.value))}
                             />
                         </div>
-                        <button className="btn btn-success">Submit</button>
+                        <button className="btn btn-outline-primary">Create Club</button>
                     </form>
                 </div>
             </div>

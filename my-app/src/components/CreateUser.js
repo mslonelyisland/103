@@ -1,28 +1,38 @@
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from './Navbar'; // Import the navbar component
 
-function CreateUser(){
-    const [name, setName] = useState();
-    const [email, setEmail] = useState();
-    const [age, setAge] = useState();
-    const [club, setClub] = useState();
-    const [position, setPosition] = useState();
+function CreateUser() {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [age, setAge] = useState(0);
+    const [selectedClub, setSelectedClub] = useState('');
+    const [clubs, setClubs] = useState([]);
+    const [position, setPosition] = useState([]);
  
     const navigate = useNavigate();
  
+    useEffect(() => {
+        axios.get('http://localhost:3001/clubs')
+            .then(response => {
+                setClubs(response.data);
+            })
+            .catch(err => console.log(err));
+    }, []);
+ 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post('http://localhost:3001/createuser', {name, email, age, club, position})
-        .then(res => {
-            console.log(res);
-            navigate('/');
-        })
-        .catch(err => console.log(err));
+        const selectedClubId = clubs.find(club => club.clubName === selectedClub)?._id;
+        axios.post('http://localhost:3001/createuser', { name, email, age, club: selectedClubId, position })
+            .then(res => {
+                console.log(res);
+                navigate('/users');
+            })
+            .catch(err => console.log(err));
     };
 
-    return(
+    return (
         <div>
             <Navbar /> {/* Include the navbar component */}
             <div className="container-fluid d-flex justify-content-center align-items-center vh-110">
@@ -35,6 +45,7 @@ function CreateUser(){
                                 type="text"
                                 placeholder="Enter Name"
                                 className="form-control"
+                                value={name}
                                 onChange={(e) => setName(e.target.value)}
                             />
                         </div>
@@ -44,26 +55,32 @@ function CreateUser(){
                                 type="email"
                                 placeholder="Enter Email"
                                 className="form-control"
+                                value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
                         <div className="mb-2">
                             <label htmlFor="">Age</label>
                             <input
-                                type="text"
+                                type="number"
                                 placeholder="Enter Age"
                                 className="form-control"
-                                onChange={(e) => setAge(e.target.value)}
+                                value={age}
+                                onChange={(e) => setAge(parseInt(e.target.value))}
                             />
                         </div>
                         <div className="mb-2">
                             <label htmlFor="">Club</label>
-                            <input
-                                type="text"
-                                placeholder="Enter Club"
+                            <select
                                 className="form-control"
-                                onChange={(e) => setClub(e.target.value)}
-                            />
+                                value={selectedClub}
+                                onChange={(e) => setSelectedClub(e.target.value)}
+                            >
+                                <option value="">Select Club</option>
+                                {clubs.map(club => (
+                                    <option key={club._id} value={club.clubName}>{club.clubName}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="mb-2">
                             <label htmlFor="">Position</label>
@@ -74,7 +91,7 @@ function CreateUser(){
                                 onChange={(e) => setPosition(e.target.value)}
                             />
                         </div>
-                        <button className="btn btn-success">Submit</button>
+                        <button className="btn btn-outline-primary">Create User</button>
                     </form>
                 </div>
             </div>
