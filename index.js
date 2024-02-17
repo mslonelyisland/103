@@ -3,9 +3,11 @@ const mongoose = require("mongoose");
 const UserModel = require("./User");
 const ClubModel = require("./Club"); 
 var cors = require('cors')
+
 const app = express();
 const port = 3001;
 app.use(cors())
+
 app.use(express.json());
 
 mongoose
@@ -42,24 +44,28 @@ app.get("/", (req, res) => {
 app.get("/get/:id", (req, res) => {
   const id = req.params.id;
   UserModel.findById(id)
-  .populate('club') // Populate the 'club' field with actual club details
-  .then((users) => {
-    // Convert age to string and construct the desired output format
-    const formattedUsers = users.map(user => ({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      age: user.age.toString(), // Convert age to string
-      club: user.club ? user.club.clubName : '', // Display club name if available
-      position: user.position
-    }));
-    res.json(formattedUsers);
-  })
-  .catch((err) => {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
-  });
+    .populate('club')
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      const formattedUser = {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        age: user.age.toString(),
+        club: user.club ? user.club.clubName : '',
+        position: user.position
+      };
+      res.json(formattedUser);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    });
 });
+
+
 
 //Create user, working
 app.post("/createuser", async (req, res) => {
@@ -90,17 +96,15 @@ app.post("/createuser", async (req, res) => {
   }
 });
 
-
-
 //update the info
 app.put("/updateuser/:id", async (req, res) => {
-  const userId = req.params.id;
+  const id = req.params.id;
   const { name, email, age, position, clubName } = req.body; // Assuming clubName is the field containing the club's name
 
   try {
     // Update user information including club name
     const user = await UserModel.findByIdAndUpdate(
-      userId,
+      id,
       {
         name,
         email,
@@ -142,6 +146,18 @@ app.get("/clubs", (req, res) => {
     .populate('users') // Populate the 'users' field with actual user details
     .then((clubs) => res.json(clubs))
     .catch((err) => res.json(err));
+});
+// Retrieve users in a specific club
+app.get("/clubs/:id/users", (req, res) => {
+  const clubId = req.params.id;
+  UserModel.find({ club: clubId })
+    .then(users => {
+      res.json(users);
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    });
 });
 
 // Create a club,working
